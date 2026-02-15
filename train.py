@@ -1,33 +1,42 @@
-import pandas as pd
+import ssl
+import certifi
+import pickle
+from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import pickle
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 
-data = {
-    "text": [
-        "Win money now",
-        "Call me later",
-        "Limited offer just for you",
-        "Let's have lunch tomorrow",
-        "Claim your free prize now",
-        "Are we meeting today?"
-    ],
-    "label": [1, 0, 1, 0, 1, 0]  # 1=spam, 0=normal
-}
 
-df = pd.DataFrame(data)
+ssl._create_default_https_context = lambda: ssl.create_default_context(cafile=certifi.where())
 
-# 文本向量化
-vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(df["text"])
-y = df["label"]
+# ----------------------
+# 加载数据
+# ----------------------
+newsgroups = fetch_20newsgroups(subset='all')
+X = newsgroups.data
+y = newsgroups.target
+labels = newsgroups.target_names
 
-# 模型训练
-model = LogisticRegression()
-model.fit(X, y)
+# ----------------------
+# 划分训练/测试
+# ----------------------
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+# ----------------------
+# 训练管道
+# ----------------------
+model = make_pipeline(TfidfVectorizer(stop_words='english'), LogisticRegression(max_iter=1000))
+model.fit(X_train, y_train)
+
+# ----------------------
+# 评估
+# ----------------------
+print(classification_report(y_test, model.predict(X_test), target_names=labels))
+
+# ----------------------
 # 保存模型
-pickle.dump(model, open("model.pkl", "wb"))
-pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
-
+# ----------------------
+pickle.dump(model, open("text_classifier.pkl", "wb"))
 print("Model trained and saved.")
