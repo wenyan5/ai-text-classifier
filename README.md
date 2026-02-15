@@ -10,6 +10,6 @@ This project is a simple machine learning web application that detects spam mess
 
 ## Run locally
 
-pip install -r requirements.txt
-python train.py
-streamlit run app.py
+- pip install -r requirements.txt
+- python train.py
+- streamlit run app.py
