@@ -13,7 +13,7 @@ This project is a simple machine learning web application that detects spam mess
 - python train.py
 - streamlit run app.py
 
-Demo test:
+## Demo test:
 Congratulations! You have won a $1000 gift card! 🎉
 Click here NOW to claim your prize: http://fake-website.com/redeem
 Hurry, this offer expires in 24 hours!
